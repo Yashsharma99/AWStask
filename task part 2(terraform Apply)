@@ -1,0 +1,271 @@
+// Terraform  Apply:-
+C:\Users\yash sharma.DESKTOP-9UMDR1O\Desktop\tera\mytest>terraform apply
+aws_s3_bucket.b: Refreshing state... [id=my-bucket.buzz]
+aws_ebs_volume.my-pendrive: Refreshing state... [id=vol-0088c12bdcd0322e4]
+aws_security_group.Security_group: Refreshing state... [id=sg-069308906b4727ef6]
+aws_cloudfront_distribution.www_distribution: Refreshing state... [id=E1FP06PKZLJPTR]
+
+An execution plan has been generated and is shown below.
+Resource actions are indicated with the following symbols:
+  + create
+  ~ update in-place
+
+Terraform will perform the following actions:
+
+  # aws_cloudfront_distribution.www_distribution will be updated in-place
+  ~ resource "aws_cloudfront_distribution" "www_distribution" {
+        active_trusted_signers         = {
+            "enabled" = "false"
+            "items.#" = "0"
+        }
+        aliases                        = []
+        arn                            = "arn:aws:cloudfront::711885951967:distribution/E1FP06PKZLJPTR"
+        caller_reference               = "terraform-20200614134018424900000001"
+        default_root_object            = "index.html"
+        domain_name                    = "d23ytw5c4f3kvz.cloudfront.net"
+        enabled                        = true
+        etag                           = "E17N1PA2Q8Q1MU"
+        hosted_zone_id                 = "Z2FDTNDATAQYW2"
+        http_version                   = "http2"
+        id                             = "E1FP06PKZLJPTR"
+        in_progress_validation_batches = 0
+        is_ipv6_enabled                = false
+        last_modified_time             = "2020-06-14 13:40:19.763 +0000 UTC"
+        price_class                    = "PriceClass_All"
+        retain_on_delete               = false
+        status                         = "Deployed"
+        tags                           = {}
+        wait_for_deployment            = true
+
+        default_cache_behavior {
+            allowed_methods        = [
+                "GET",
+                "HEAD",
+            ]
+            cached_methods         = [
+                "GET",
+                "HEAD",
+            ]
+            compress               = true
+            default_ttl            = 86400
+            max_ttl                = 31536000
+            min_ttl                = 0
+            smooth_streaming       = false
+            target_origin_id       = "mydistribution"
+            trusted_signers        = []
+            viewer_protocol_policy = "redirect-to-https"
+
+            forwarded_values {
+                headers                 = []
+                query_string            = false
+                query_string_cache_keys = []
+
+                cookies {
+                    forward           = "none"
+                    whitelisted_names = []
+                }
+            }
+        }
+
+        origin {
+            domain_name = "my-bucket.buzz.s3.ap-south-1.amazonaws.com"
+            origin_id   = "mydistribution"
+
+            custom_origin_config {
+                http_port                = 80
+                https_port               = 443
+                origin_keepalive_timeout = 5
+                origin_protocol_policy   = "http-only"
+                origin_read_timeout      = 30
+                origin_ssl_protocols     = [
+                    "TLSv1",
+                    "TLSv1.1",
+                    "TLSv1.2",
+                ]
+            }
+        }
+
+        restrictions {
+            geo_restriction {
+                locations        = []
+                restriction_type = "none"
+            }
+        }
+
+      ~ viewer_certificate {
+            cloudfront_default_certificate = true
+            minimum_protocol_version       = "TLSv1"
+          + ssl_support_method             = "sni-only"
+        }
+    }
+
+  # aws_instance.my_instance will be created
+  + resource "aws_instance" "my_instance" {
+      + ami                          = "ami-0447a12f28fddb066"
+      + arn                          = (known after apply)
+      + associate_public_ip_address  = (known after apply)
+      + availability_zone            = "ap-south-1b"
+      + cpu_core_count               = (known after apply)
+      + cpu_threads_per_core         = (known after apply)
+      + get_password_data            = false
+      + host_id                      = (known after apply)
+      + id                           = (known after apply)
+      + instance_state               = (known after apply)
+      + instance_type                = "t2.micro"
+      + ipv6_address_count           = (known after apply)
+      + ipv6_addresses               = (known after apply)
+      + key_name                     = "my-key"
+      + network_interface_id         = (known after apply)
+      + outpost_arn                  = (known after apply)
+      + password_data                = (known after apply)
+      + placement_group              = (known after apply)
+      + primary_network_interface_id = (known after apply)
+      + private_dns                  = (known after apply)
+      + private_ip                   = (known after apply)
+      + public_dns                   = (known after apply)
+      + public_ip                    = (known after apply)
+      + security_groups              = (known after apply)
+      + source_dest_check            = true
+      + subnet_id                    = (known after apply)
+      + tags                         = {
+          + "Name" = "myos"
+        }
+      + tenancy                      = (known after apply)
+      + user_data                    = "2a6fc96ec2205ef9315878829cd2b86c40b43f83"
+      + volume_tags                  = (known after apply)
+      + vpc_security_group_ids       = [
+          + "sg-069308906b4727ef6",
+        ]
+
+      + ebs_block_device {
+          + delete_on_termination = (known after apply)
+          + device_name           = (known after apply)
+          + encrypted             = (known after apply)
+          + iops                  = (known after apply)
+          + kms_key_id            = (known after apply)
+          + snapshot_id           = (known after apply)
+          + volume_id             = (known after apply)
+          + volume_size           = (known after apply)
+          + volume_type           = (known after apply)
+        }
+
+      + ephemeral_block_device {
+          + device_name  = (known after apply)
+          + no_device    = (known after apply)
+          + virtual_name = (known after apply)
+        }
+
+      + metadata_options {
+          + http_endpoint               = (known after apply)
+          + http_put_response_hop_limit = (known after apply)
+          + http_tokens                 = (known after apply)
+        }
+
+      + network_interface {
+          + delete_on_termination = (known after apply)
+          + device_index          = (known after apply)
+          + network_interface_id  = (known after apply)
+        }
+
+      + root_block_device {
+          + delete_on_termination = (known after apply)
+          + device_name           = (known after apply)
+          + encrypted             = (known after apply)
+          + iops                  = (known after apply)
+          + kms_key_id            = (known after apply)
+          + volume_id             = (known after apply)
+          + volume_size           = (known after apply)
+          + volume_type           = (known after apply)
+        }
+    }
+
+  # aws_key_pair.my-first-key will be created
+  + resource "aws_key_pair" "my-first-key" {
+      + fingerprint = (known after apply)
+      + id          = (known after apply)
+      + key_name    = "my-key"
+      + key_pair_id = (known after apply)
+      + public_key  = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDHacg26ncHieAXgSDzYSO2UvvT0BMB2bWueQp3M0DGqd1zhMbCAxACJZqWj+n8L93qFWSMadAw9zZJnBrf1Va6LegsQbwK9/pMOIrKTRZanaJP/UpM7qWDyqPlXZphx/BIOXtRUIAYhVjPhf0TIKPfygDdOUYeIMFN93DAlNxRmbyVQsSCwq6EuidmNyhQkirbNKINlMXLOokTmk79Q8kIkbOvzk4p8CgXn3MzSmXSp7/Nz7ftg+F3zpKPm0Xr3pN1DPMXtKsRdBTOQFkvs+VWD/Kpd9gMWPL+XMHRhqb0Imq+a1wezm1Pd8sNhmbpOjPXyDb2xOX4JmLHdkJqVYSL root@ip-172-31-41-39.ap-south-1.compute.internal"
+    }
+
+  # aws_s3_bucket_object.object will be created
+  + resource "aws_s3_bucket_object" "object" {
+      + acl                    = "public-read"
+      + bucket                 = "my-bucket.buzz"
+      + content_type           = "image/jpeg"
+      + etag                   = (known after apply)
+      + force_destroy          = false
+      + id                     = (known after apply)
+      + key                    = "myimg.jpg"
+      + server_side_encryption = (known after apply)
+      + source                 = "C:/myimg.jpg"
+      + storage_class          = (known after apply)
+      + version_id             = (known after apply)
+    }
+
+  # aws_volume_attachment.vol_att will be created
+  + resource "aws_volume_attachment" "vol_att" {
+      + device_name = "/dev/sdh"
+      + id          = (known after apply)
+      + instance_id = (known after apply)
+      + volume_id   = "vol-0088c12bdcd0322e4"
+    }
+
+Plan: 4 to add, 1 to change, 0 to destroy.
+
+
+Warning: Interpolation-only expressions are deprecated
+
+  on ec2.tf line 103, in resource "aws_volume_attachment" "vol_att":
+ 103:   volume_id   = "${aws_ebs_volume.my-pendrive.id}"
+
+Terraform 0.11 and earlier required all non-constant expressions to be
+provided via interpolation syntax, but this pattern is now deprecated. To
+silence this warning, remove the "${ sequence from the start and the }"
+sequence from the end of this expression, leaving just the inner expression.
+
+Template interpolation syntax is still used to construct strings from
+expressions when the template includes multiple interpolation sequences or a
+mixture of literal strings and interpolations. This deprecation applies only
+to templates that consist entirely of a single interpolation sequence.
+
+(and 2 more similar warnings elsewhere)
+
+Do you want to perform these actions?
+  Terraform will perform the actions described above.
+  Only 'yes' will be accepted to approve.
+ Enter a value: yes
+aws_key_pair.my-first-key: Creating...
+aws_instance.my_instance: Creating...
+aws_s3_bucket_object.object: Creating...
+aws_cloudfront_distribution.www_distribution: Modifying... [id=E1FP06PKZLJPTR]
+aws_key_pair.my-first-key: Creation complete after 1s [id=my-key]
+aws_s3_bucket_object.object: Creation complete after 2s [id=myimg.jpg]
+aws_instance.my_instance: Still creating... [10s elapsed]
+aws_cloudfront_distribution.www_distribution: Still modifying... [id=E1FP06PKZLJPTR, 10s elapsed]
+aws_instance.my_instance: Still creating... [20s elapsed]
+aws_cloudfront_distribution.www_distribution: Still modifying... [id=E1FP06PKZLJPTR, 20s elapsed]
+aws_instance.my_instance: Creation complete after 23s [id=i-02117dc2de7aeb8af]
+aws_volume_attachment.vol_att: Creating...
+aws_cloudfront_distribution.www_distribution: Still modifying... [id=E1FP06PKZLJPTR, 30s elapsed]
+aws_volume_attachment.vol_att: Still creating... [10s elapsed]
+aws_cloudfront_distribution.www_distribution: Still modifying... [id=E1FP06PKZLJPTR, 40s elapsed]
+aws_volume_attachment.vol_att: Still creating... [20s elapsed]
+aws_volume_attachment.vol_att: Creation complete after 22s [id=vai-189268584]
+aws_cloudfront_distribution.www_distribution: Still modifying... [id=E1FP06PKZLJPTR, 50s elapsed]
+aws_cloudfront_distribution.www_distribution: Still modifying... [id=E1FP06PKZLJPTR, 1m0s elapsed]
+aws_cloudfront_distribution.www_distribution: Still modifying... [id=E1FP06PKZLJPTR, 1m10s elapsed]
+aws_cloudfront_distribution.www_distribution: Still modifying... [id=E1FP06PKZLJPTR, 1m20s elapsed]
+aws_cloudfront_distribution.www_distribution: Still modifying... [id=E1FP06PKZLJPTR, 1m30s elapsed]
+aws_cloudfront_distribution.www_distribution: Still modifying... [id=E1FP06PKZLJPTR, 1m40s elapsed]
+aws_cloudfront_distribution.www_distribution: Still modifying... [id=E1FP06PKZLJPTR, 1m50s elapsed]
+aws_cloudfront_distribution.www_distribution: Still modifying... [id=E1FP06PKZLJPTR, 2m0s elapsed]
+aws_cloudfront_distribution.www_distribution: Still modifying... [id=E1FP06PKZLJPTR, 2m10s elapsed]
+aws_cloudfront_distribution.www_distribution: Still modifying... [id=E1FP06PKZLJPTR, 2m20s elapsed]
+aws_cloudfront_distribution.www_distribution: Still modifying... [id=E1FP06PKZLJPTR, 2m30s elapsed]
+aws_cloudfront_distribution.www_distribution: Still modifying... [id=E1FP06PKZLJPTR, 2m40s elapsed]
+aws_cloudfront_distribution.www_distribution: Still modifying... [id=E1FP06PKZLJPTR, 2m50s elapsed]
+aws_cloudfront_distribution.www_distribution: Still modifying... [id=E1FP06PKZLJPTR, 3m0s elapsed]
+aws_cloudfront_distribution.www_distribution: Modifications complete after 3m3s [id=E1FP06PKZLJPTR]
+Apply complete! Resources: 4 added, 1 changed, 0 destroyed.
+C:\Users\yash sharma.DESKTOP-9UMDR1O\Desktop\tera\mytest>
