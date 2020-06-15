@@ -1,0 +1,166 @@
+Task 1 : Have to create/launch Application using Terraform
+1. Create the key and security group which allow the port 80.
+2. Launch EC2 instance.
+3. In this Ec2 instance use the key and security group which we have created in step 1.
+4. Launch one Volume (EBS) and mount that volume into /var/www/html
+5. Developer have uploded the code into github repo also the repo has some images.
+6. Copy the github repo code into /var/www/html
+7. Create S3 bucket, and copy/deploy the images from github repo into the s3 bucket and change the permission to public readable.
+8 Create a Cloudfront using s3 bucket(which contains images) and use the Cloudfront URL to  update in code in /var/www/html
+
+CODE:-
+provider "aws" {
+ region      = "ap-south-1"
+  access_key = "**************"
+  secret_key = "****************************"
+}
+// Creating key pair
+resource "aws_key_pair"  "my-first-key" {
+  key_name   = "my-key"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDHacg26ncHieAXgSDzYSO2UvvT0BMB2bWueQp3M0DGqd1zhMbCAxACJZqWj+n8L93qFWSMadAw9zZJnBrf1Va6LegsQbwK9/pMOIrKTRZanaJP/UpM7qWDyqPlXZphx/BIOXtRUIAYhVjPhf0TIKPfygDdOUYeIMFN93DAlNxRmbyVQsSCwq6EuidmNyhQkirbNKINlMXLOokTmk79Q8kIkbOvzk4p8CgXn3MzSmXSp7/Nz7ftg+F3zpKPm0Xr3pN1DPMXtKsRdBTOQFkvs+VWD/Kpd9gMWPL+XMHRhqb0Imq+a1wezm1Pd8sNhmbpOjPXyDb2xOX4JmLHdkJqVYSL root@ip-172-31-41-39.ap-south-1.compute.internal"
+// Security group creation 
+resource "aws_security_group"  "Security_group"  {
+vpc_id      =  "vpc-55b9a43d"  
+name = "Security_group"
+description = "allow ssh and http traffic"
+ingress {
+ cidr_blocks = ["0.0.0.0/0"]
+ from_port   = 80
+ to_port     = 80
+  protocol    = "tcp"
+  }
+ingress {
+    cidr_blocks = ["0.0.0.0/0"]
+    from_port   = 22
+    to_port     = 22
+  protocol    = "tcp"
+  }
+egress {
+   from_port   = 0
+   to_port     = 0
+      protocol    = "-1"
+  cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+// Create instance
+resource "aws_instance" "my_instance" {
+  ami           = "ami-0447a12f28fddb066"
+  instance_type = "t2.micro"
+  key_name      = "my-key"
+  availability_zone = "ap-south-1b"
+  vpc_security_group_ids = [
+    "${aws_security_group.Security_group.id}",  ]
+   user_data = <<-EOF
+                   #!/bin/bash
+                         sudo su
+                 yum -y install httpd  php git
+				cd /var/www/html 
+				git clone https://github.com/Yashsharma99/task.git
+			    cp task/myimg.jpg  /var/www/html/
+                echo "<img src="myimg.jpg"  width="400" height="500" title="My site" alt=" My public site" >" >> /var/www/html/index.php
+                sudo systemctl enable httpd
+                sudo systemctl start httpd
+                                              
+                  EOF                
+
+  tags = {
+    Name = "myos"
+  }
+}
+
+
+######## create volume ######	
+resource "aws_ebs_volume" "my-pendrive" {
+  availability_zone = "ap-south-1b"
+  size              = 1
+  tags = {
+    Name = "my_pd"
+  }
+}
+####### Attach EBS Volume ######
+resource "aws_volume_attachment" "vol_att" {
+  device_name = "/dev/sdh"
+  volume_id   = "${aws_ebs_volume.my-pendrive.id}"
+  instance_id = "${aws_instance.my_instance.id}"
+}
+####### create s3 bucket ###
+resource "aws_s3_bucket" "b" {
+  bucket = "my-bucket.buzz"
+  acl    = "public-read" 
+  tags = {
+    Name        = "My bucket"
+    Environment = "Dev"
+  }
+}
+
+####### put object ######
+resource "aws_s3_bucket_object" "object" {
+  bucket = "my-bucket.buzz"
+  key    = "myimg.jpg"
+  content_type  = "image/jpeg"
+  source = "C:/myimg.jpg"
+  acl = "public-read"
+}
+#######  create cloudfront  #######################
+resource "aws_cloudfront_distribution" "www_distribution" {
+  // origin is where CloudFront gets its content from.
+   origin {
+    // We need to set up a "custom" origin because otherwise CloudFront won't
+    // redirect traffic from the root domain to the www domain, that is from
+    // runatlantis.io to www.runatlantis.io.
+   custom_origin_config  {
+      // These are all the defaults.
+   http_port              = "80"
+    https_port               = "443"
+      
+ origin_protocol_policy   = "http-only"
+ origin_ssl_protocols = ["TLSv1", "TLSv1.1", "TLSv1.2"]
+    
+ }
+ // Here we're using our S3 bucket's URL!
+  domain_name = "${aws_s3_bucket.b.bucket_regional_domain_name}"
+ // This can be any name to identify this origin.
+    origin_id   = "mydistribution"
+}
+ enabled             = true
+default_root_object = "index.html"
+// All values are defaults from the AWS console.
+  default_cache_behavior {
+    viewer_protocol_policy = "redirect-to-https"
+ compress               = true
+   allowed_methods        = ["GET", "HEAD"]
+   cached_methods        = ["GET", "HEAD"]
+ // This needs to match the `origin_id` above.
+    target_origin_id       = "mydistribution"
+   min_ttl                = 0
+   default_ttl            = 86400
+   max_ttl                = 31536000
+forwarded_values {
+query_string = false
+    cookies {
+  forward = "none"          
+     }                  
+              }          
+                   }
+// Here we're ensuring we can hit this distribution using www.runatlantis.io
+// rather than the domain name CloudFront gives us.
+//aliases = ["${var.www_domain_name}"]
+
+ restrictions {
+   geo_restriction {
+    restriction_type = "none"
+  }
+ }
+
+
+viewer_certificate {
+  
+ // acm_certificate_arn = "${aws_acm_certificate.certificate.arn}"
+   
+ ssl_support_method  = "sni-only"
+  
+  cloudfront_default_certificate = true
+  
+}
+}
